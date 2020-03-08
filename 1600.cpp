@@ -26,18 +26,20 @@ int main()
         map.push_back(v_temp);
     }
 
-    // visit[H][W][K]
-    std::vector<std::vector<std::vector<bool>>> visit; // (H, std::vector<std::vector<bool>>(W, std::vector<bool>(K, false)));
+    // visit[H][W][K + 1] need to set as 'K + 1' because the range of 'horse move count' can be 0 ~ K
+    std::vector<std::vector<std::vector<bool>>> visit(H, std::vector<std::vector<bool>>(W, std::vector<bool>(K + 1, false)));
+    /*
     for (int i = 0; i < H; ++i)
     {
         std::vector<std::vector<bool>> v_temp_1;
         for (int j = 0; j < W; ++j)
         {
-            std::vector<bool> v_temp_2(K, false);
+            std::vector<bool> v_temp_2(K + 1, false);
             v_temp_1.push_back(v_temp_2);
         }
         visit.push_back(v_temp_1);
     }
+    */
 
     visit[0][0][0] = true;
 
@@ -91,7 +93,8 @@ int main()
         }
     }
 
-    std::cout << "fail";
+    // fixed to -1 from 'fail'
+    std::cout << -1 << "\n";
 
     return 0;
 }
