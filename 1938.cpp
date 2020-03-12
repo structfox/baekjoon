@@ -2,6 +2,7 @@
 #include <queue>
 
 int map[50][50];
+bool visit[50][50][2];
 int N;
 std::pair<int, int> E1, E2, E3;
 
@@ -140,28 +141,73 @@ int main()
             case 0:
                 nt.Up();
                 if (isSafe(nt))
-                    Q.push({cnt + 1, nt});
+                    if (nt.first.first == nt.second.first) // shape ---
+                    {
+                        if (visit[nt.center.first][nt.center.second][0] == false)
+                            Q.push({cnt + 1, nt});
+                    }
+                    else //shape |
+                    {
+                        if (visit[nt.center.first][nt.center.second][1] == false)
+                            Q.push({cnt + 1, nt});
+                    }
                 break;
             case 1:
                 nt.Down();
                 if (isSafe(nt))
-                    Q.push({cnt + 1, nt});
+                    if (nt.first.first == nt.second.first) // shape ---
+                    {
+                        if (visit[nt.center.first][nt.center.second][0] == false)
+                            Q.push({cnt + 1, nt});
+                    }
+                    else //shape |
+                    {
+                        if (visit[nt.center.first][nt.center.second][1] == false)
+                            Q.push({cnt + 1, nt});
+                    }
                 break;
             case 2:
                 nt.Left();
                 if (isSafe(nt))
-                    Q.push({cnt + 1, nt});
+                    if (nt.first.first == nt.second.first) // shape ---
+                    {
+                        if (visit[nt.center.first][nt.center.second][0] == false)
+                            Q.push({cnt + 1, nt});
+                    }
+                    else //shape |
+                    {
+                        if (visit[nt.center.first][nt.center.second][1] == false)
+                            Q.push({cnt + 1, nt});
+                    }
                 break;
             case 3:
                 nt.Right();
                 if (isSafe(nt))
-                    Q.push({cnt + 1, nt});
+                    if (nt.first.first == nt.second.first) // shape ---
+                    {
+                        if (visit[nt.center.first][nt.center.second][0] == false)
+                            Q.push({cnt + 1, nt});
+                    }
+                    else //shape |
+                    {
+                        if (visit[nt.center.first][nt.center.second][1] == false)
+                            Q.push({cnt + 1, nt});
+                    }
                 break;
             case 4:
                 if (isSafeTurn(nt))
                 {
                     nt.Turn();
-                    Q.push({cnt + 1, nt});
+                    if (nt.first.first == nt.second.first) // shape ---
+                    {
+                        if (visit[nt.center.first][nt.center.second][0] == false)
+                            {Q.push({cnt + 1, nt});}
+                    }
+                    else //shape |
+                    {
+                        if (visit[nt.center.first][nt.center.second][1] == false)
+                            Q.push({cnt + 1, nt});
+                    }
                 }
                 break;
             }
