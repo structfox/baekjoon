@@ -138,7 +138,7 @@ int main()
     }
 
     Q.push({cnt, T});
-    visit[1][0][1] = true;
+    visit[T.center.first][T.center.second][1] = true;
 
     while (!Q.empty())
     {
