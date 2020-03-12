@@ -146,11 +146,13 @@ int main()
         T = Q.front().second;
         Q.pop();
 
-        if (T.first.first == E1.first && T.first.second == E1.second && T.center.first == E2.first && T.center.second == E2.second)
-        {
-            std::cout << cnt << "\n";
-            return 0;
-        }
+        if (T.center.first == E2.first && T.center.second == E2.second)
+            if ((T.first.first == E1.first && T.first.second == E1.second)
+            || (T.first.first == E3.first && T.first.second == E3.second))
+            {
+                std::cout << cnt << "\n";
+                return 0;
+            }
 
         // bfs
         for (int i = 0; i < 5; ++i)
