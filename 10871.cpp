@@ -18,6 +18,7 @@ void sel()
 
 int main()
 {
+    // input
     std::cin >> n >> x;
     for (int i = 0; i < n; ++i)
         std::cin >> arr_in[i];
