@@ -5,7 +5,6 @@ int map[50][50];
 bool visit[50][50][2];
 int N;
 std::pair<int, int> E1, E2, E3;
-
 class Tree
 {
     public:
@@ -17,6 +16,7 @@ class Tree
         void Right();
         void Turn();
 };
+std::queue<std::pair<int, Tree>> Q;
 
 bool isSafe(const Tree& T)
 {
@@ -33,7 +33,7 @@ bool isSafe(const Tree& T)
 
 bool isSafeTurn(const Tree& T)
 {
-    if (T.first.first == T.second.first)
+    if (T.first.first == T.second.first) // shape ---
     {
         if (T.first.first - 1 >= 0 && T.first.first + 1 < N)
             if (map[T.first.first - 1][T.first.second] == 0
@@ -44,7 +44,7 @@ bool isSafeTurn(const Tree& T)
                 && map[T.second.first + 1][T.second.second] == 0)
                     return true;
     }
-    else
+    else // shape |
         if (T.first.second - 1 >= 0 && T.first.second + 1 < N)
             if (map[T.first.first][T.first.second + 1] == 0
             && map[T.center.first][T.center.second + 1] == 0
@@ -57,13 +57,30 @@ bool isSafeTurn(const Tree& T)
     return false;
 }
 
+void push_queue(const int& cnt, const Tree& T)
+{
+    if (T.first.first == T.second.first) // shape ---
+    {
+        if (visit[T.center.first][T.center.second][0] == false)
+        {
+            visit[T.center.first][T.center.second][0] = true;
+            Q.push({cnt + 1, T});
+        }
+    }
+    else //shape |
+        if (visit[T.center.first][T.center.second][1] == false)
+        {
+            visit[T.center.first][T.center.second][1] = true;
+            Q.push({cnt + 1, T});
+        }
+}
+
 int main()
 {
     int B_tmp = 0;
     int E_tmp = 0;
     int cnt = 0;
     Tree T;
-    std::queue<std::pair<int, Tree>> Q;
 
     // input
     std::cin >> N;
@@ -115,11 +132,13 @@ int main()
             }
             else
             {
-                map[i][j] = temp;
+                map[i][j] = temp - '0';
             }
         }
     }
+
     Q.push({cnt, T});
+    visit[1][0][1] = true;
 
     while (!Q.empty())
     {
@@ -133,6 +152,7 @@ int main()
             return 0;
         }
 
+        // bfs
         for (int i = 0; i < 5; ++i)
         {
             Tree nt = T;
@@ -141,73 +161,36 @@ int main()
             case 0:
                 nt.Up();
                 if (isSafe(nt))
-                    if (nt.first.first == nt.second.first) // shape ---
-                    {
-                        if (visit[nt.center.first][nt.center.second][0] == false)
-                            Q.push({cnt + 1, nt});
-                    }
-                    else //shape |
-                    {
-                        if (visit[nt.center.first][nt.center.second][1] == false)
-                            Q.push({cnt + 1, nt});
-                    }
+                {
+                    push_queue(cnt, nt);
+                }
                 break;
             case 1:
                 nt.Down();
                 if (isSafe(nt))
-                    if (nt.first.first == nt.second.first) // shape ---
-                    {
-                        if (visit[nt.center.first][nt.center.second][0] == false)
-                            Q.push({cnt + 1, nt});
-                    }
-                    else //shape |
-                    {
-                        if (visit[nt.center.first][nt.center.second][1] == false)
-                            Q.push({cnt + 1, nt});
-                    }
+                {
+                    push_queue(cnt, nt);
+                }
                 break;
             case 2:
                 nt.Left();
                 if (isSafe(nt))
-                    if (nt.first.first == nt.second.first) // shape ---
-                    {
-                        if (visit[nt.center.first][nt.center.second][0] == false)
-                            Q.push({cnt + 1, nt});
-                    }
-                    else //shape |
-                    {
-                        if (visit[nt.center.first][nt.center.second][1] == false)
-                            Q.push({cnt + 1, nt});
-                    }
+                {
+                    push_queue(cnt, nt);
+                }
                 break;
             case 3:
                 nt.Right();
                 if (isSafe(nt))
-                    if (nt.first.first == nt.second.first) // shape ---
-                    {
-                        if (visit[nt.center.first][nt.center.second][0] == false)
-                            Q.push({cnt + 1, nt});
-                    }
-                    else //shape |
-                    {
-                        if (visit[nt.center.first][nt.center.second][1] == false)
-                            Q.push({cnt + 1, nt});
-                    }
+                {
+                    push_queue(cnt, nt);
+                }
                 break;
             case 4:
                 if (isSafeTurn(nt))
                 {
                     nt.Turn();
-                    if (nt.first.first == nt.second.first) // shape ---
-                    {
-                        if (visit[nt.center.first][nt.center.second][0] == false)
-                            {Q.push({cnt + 1, nt});}
-                    }
-                    else //shape |
-                    {
-                        if (visit[nt.center.first][nt.center.second][1] == false)
-                            Q.push({cnt + 1, nt});
-                    }
+                    push_queue(cnt, nt);
                 }
                 break;
             }
