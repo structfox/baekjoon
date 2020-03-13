@@ -233,9 +233,18 @@ void Tree::Right()
 
 void Tree::Turn()
 {
-    first.first += 1;
-    first.second -= 1;
-    second.first -= 1;
-    second.second += 1;
-    std::swap(first, second);
+    if (first.first == second.first) // shape ---
+    {
+        first.first -= 1;
+        first.second += 1;
+        second.first += 1;
+        second.second -= 1;
+    }
+    else
+    {
+        first.first += 1;
+        first.second -= 1;
+        second.first -= 1;
+        second.second += 1;
+    }
 }
