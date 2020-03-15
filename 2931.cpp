@@ -1,19 +1,20 @@
 #include <iostream>
+#include <map>
 /*
     ↑0, ↓1, ←2, →3
 */
 char map[25][25];
 std::pair<int, int> loc, Z, M; // coordination, direction from Z, direction from M
 int dfz, dfm, R, C;
-int cnt_map = 0, cnt_travel = 0;
+std::multimap<int, int> mm;
 
 int DFS(std::pair<int, int>& l, const int& d) // coordination, 
 {
-    if (map[loc.first][loc.second] == '.')
+    if (map[l.first][l.second] == '.')
         return d;
-    
-    cnt_travel++;
-    
+
+    mm.erase(mm.find({l.first, l.second}));
+
     switch (map[l.first][l.second])
     {
     case '|':
@@ -127,16 +128,21 @@ int main()
             std::cin >> map[i][j];
 
             if (map[i][j] != '.')
-                ++cnt_map;
+                mm.insert({i, j});
 
             if (map[i][j] == 'M')
+            {
                 M = {i, j};
+                mm.erase(mm.find({i, j}));
+            }
             else if (map[i][j] == 'Z')
+            {
                 Z = {i, j};
+                mm.erase(mm.find({i, j}));
+            }
         }
     }
-    cnt_travel += 2;
-
+    
     // find dfm
     if (M.first - 1 >= 0)
         if (map[M.first - 1][M.second] != '.' && map[M.first - 1][M.second] != '2' && map[M.first - 1][M.second] != '3' && map[M.first - 1][M.second] != '-')
@@ -206,7 +212,7 @@ int main()
     // output
     std::cout << loc.first + 1 << " " << loc.second + 1 << " ";
 
-    if (cnt_travel != cnt_map)
+    if (!S.empty())
     {
         std::cout << "+" << "\n";
         return 0;
