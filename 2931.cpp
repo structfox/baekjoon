@@ -1,19 +1,20 @@
 #include <iostream>
-#include <map>
+#include <set>
 /*
     ↑0, ↓1, ←2, →3
 */
 char map[25][25];
-std::pair<int, int> loc, Z, M; // coordination, direction from Z, direction from M
+std::pair<int, int> loc_m, loc_z, Z, M; // coordination, direction from Z, direction from M
 int dfz, dfm, R, C;
-std::multimap<int, int> mm;
+std::set<std::pair<int, int>> S;
 
 int DFS(std::pair<int, int>& l, const int& d) // coordination, 
 {
     if (map[l.first][l.second] == '.')
         return d;
-
-    mm.erase(mm.find({l.first, l.second}));
+    
+    if (S.find(l) != S.end())
+        S.erase(S.find(l));
 
     switch (map[l.first][l.second])
     {
@@ -118,6 +119,39 @@ int DFS(std::pair<int, int>& l, const int& d) // coordination,
     return 0x3f3f3f3f;
 }
 
+void Find_loc(const std::pair<int, int>& S, std::pair<int, int> &l, int& d)
+{
+    l = S;
+
+    if (S.first - 1 >= 0)
+        if (map[S.first - 1][S.second] != '.' && map[S.first - 1][S.second] != '2' && map[S.first - 1][S.second] != '3' && map[S.first - 1][S.second] != '-')
+        {
+            --l.first;
+            d = DFS(l, 0);
+        }
+
+    if (S.first + 1 < R)
+        if (map[S.first + 1][S.second] != '.' && map[S.first + 1][S.second] != '1' && map[S.first + 1][S.second] != '4' && map[S.first + 1][S.second] != '-')
+        {
+            ++l.first;
+            d = DFS(l, 1);
+        }
+
+    if (S.second - 1 >= 0)
+        if (map[S.first][S.second - 1] != '.' && map[S.first][S.second - 1] != '3' && map[S.first][S.second - 1] != '4' && map[S.first][S.second - 1] != '|')
+        {
+            --l.second;
+            d = DFS(l, 2);
+        }
+
+    if (S.second + 1 < C)
+        if (map[S.first][S.second + 1] != '.' && map[S.first][S.second + 1] != '1' && map[S.first][S.second + 1] != '2' && map[S.first][S.second + 1] != '|')
+        {
+            ++l.second;
+            d = DFS(l, 3);
+        }
+}
+
 int main()
 {
     std::cin >> R >> C;
@@ -128,89 +162,32 @@ int main()
             std::cin >> map[i][j];
 
             if (map[i][j] != '.')
-                mm.insert({i, j});
+                S.insert(std::make_pair(i, j));
 
             if (map[i][j] == 'M')
             {
                 M = {i, j};
-                mm.erase(mm.find({i, j}));
+                S.erase(std::make_pair(i, j));
             }
             else if (map[i][j] == 'Z')
             {
                 Z = {i, j};
-                mm.erase(mm.find({i, j}));
+                S.erase(std::make_pair(i, j));
             }
         }
     }
-    
-    // find dfm
-    if (M.first - 1 >= 0)
-        if (map[M.first - 1][M.second] != '.' && map[M.first - 1][M.second] != '2' && map[M.first - 1][M.second] != '3' && map[M.first - 1][M.second] != '-')
-        {
-            loc = M;
-            --loc.first;
-            dfm = DFS(loc, 0);
-        }
 
-    if (M.first + 1 < R)
-        if (map[M.first + 1][M.second] != '.' && map[M.first + 1][M.second] != '1' && map[M.first + 1][M.second] != '4' && map[M.first + 1][M.second] != '-')
-        {
-            loc = M;
-            ++loc.first;
-            dfm = DFS(loc, 1);
-        }
+    Find_loc(M, loc_m, dfm);
 
-    if (M.second - 1 >= 0)
-        if (map[M.first][M.second - 1] != '.' && map[M.first][M.second - 1] != '3' && map[M.first][M.second - 1] != '4' && map[M.first][M.second - 1] != '|')
-        {
-            loc = M;
-            --loc.second;
-            dfm = DFS(loc, 2);
-        }
+    Find_loc(Z, loc_z, dfz);
 
-    if (M.second + 1 < C)
-        if (map[M.first][M.second + 1] != '.' && map[M.first][M.second + 1] != '1' && map[M.first][M.second + 1] != '2' && map[M.first][M.second + 1] != '|')
-        {
-            loc = M;
-            ++loc.second;
-            dfm = DFS(loc, 3);
-        }
-
-    // find dfz
-    if (Z.first - 1 >= 0)
-        if (map[Z.first - 1][Z.second] != '.' && map[Z.first - 1][Z.second] != '2' && map[Z.first - 1][Z.second] != '3' && map[Z.first - 1][Z.second] != '-')
-        {
-            loc = Z;
-            --loc.first;
-            dfz = DFS(loc, 0);
-        }
-
-    if (Z.first + 1 < R)
-        if (map[Z.first + 1][Z.second] != '.' && map[Z.first + 1][Z.second] != '1' && map[Z.first + 1][Z.second] != '4' && map[Z.first + 1][Z.second] != '-')
-        {
-            loc = Z;
-            ++loc.first;
-            dfz = DFS(loc, 1);
-        }
-
-    if (Z.second - 1 >= 0)
-        if (map[Z.first][Z.second - 1] != '.' && map[Z.first][Z.second - 1] != '3' && map[Z.first][Z.second - 1] != '4' && map[Z.first][Z.second - 1] != '|')
-        {
-            loc = Z;
-            --loc.second;
-            dfz = DFS(loc, 2);
-        }
-
-    if (Z.second + 1 < C)
-        if (map[Z.first][Z.second + 1] != '.' && map[Z.first][Z.second + 1] != '1' && map[Z.first][Z.second + 1] != '2' && map[Z.first][Z.second + 1] != '|')
-        {
-            loc = Z;
-            ++loc.second;
-            dfz = DFS(loc, 3);
-        }
-
+    if (loc_m != loc_z)
+    {
+        std::cout << -1 << "\n";
+        return 0;
+    }
     // output
-    std::cout << loc.first + 1 << " " << loc.second + 1 << " ";
+    std::cout << loc_m.first + 1 << " " << loc_m.second + 1 << " ";
 
     if (!S.empty())
     {
