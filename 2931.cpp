@@ -4,18 +4,24 @@
     ↑0, ↓1, ←2, →3
 */
 char map[25][25];
-std::pair<int, int> loc_m, loc_z, Z, M; // coordination, direction from Z, direction from M
-int dfz, dfm, R, C;
+std::pair<int, int> loc_m, loc_z, Z, M; // stolen location from M or Z, location of Z or M
+int dfz, dfm; // direction from Z or M
+int R, C;
+
+// save pipes
 std::set<std::pair<int, int>> S;
 
-int DFS(std::pair<int, int>& l, const int& d) // coordination, 
+int DFS(std::pair<int, int>& l, const int& d) // location from M or Z, gas direction
 {
+    // exit
     if (map[l.first][l.second] == '.')
         return d;
     
+    // erase visit pipe
     if (S.find(l) != S.end())
         S.erase(S.find(l));
 
+    // change gas direction, location
     switch (map[l.first][l.second])
     {
     case '|':
@@ -189,6 +195,7 @@ int main()
     // output
     std::cout << loc_m.first + 1 << " " << loc_m.second + 1 << " ";
 
+    // if there's not visited gas pipe
     if (!S.empty())
     {
         std::cout << "+" << "\n";
