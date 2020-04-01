@@ -1,0 +1,125 @@
+#include <iostream>
+#include <queue>
+
+const int MAX = 100;
+const int dr[4] = {0, 0, 1, -1};
+const int dc[4] = {1, -1, 0, 0};
+
+int N, M;
+int MAP[MAX][MAX];
+int visit[MAX][MAX];
+int cheese_count = 0;
+std::queue<std::pair<int, int>> Q;
+
+void Melt_Cheese()
+{
+    std::queue<std::pair<int, int>> NQ = Q;
+    while (!Q.empty()) Q.pop();
+    while (!NQ.empty())
+    {
+        int r = NQ.front().first;
+        int c = NQ.front().second;
+        NQ.pop();
+    }
+    
+
+}
+
+void Merg_Air()
+{
+    std::queue<std::pair<int, int>> NQ = Q;
+    while (!NQ.empty())
+    {
+        int r = NQ.front().first;
+        int c = NQ.front().second;
+        NQ.pop();
+ 
+        for (int i = 0; i < 4; i++)
+        {
+            int nr = r + dr[i];
+            int nc = c + dc[i];
+            if (nr >= 0 && nc >= 0 && nr < N && nc < M)
+            {
+                if (visit[nr][nc] == 0)
+                {
+                    visit[nr][nc] = 1;
+                    Q.push({nr, nc});
+                    NQ.push({nr, nc});
+                }
+            }
+        }
+    }
+}
+
+int main()
+{
+    int cnt = 0;
+
+    // input
+    std::cin >> N >> M;
+    for (int i = 0; i < N; ++i)
+        for (int j = 0; j < M; ++j)
+        {
+            std::cin >> MAP[i][j];
+            if (MAP[i][j] == 1)
+            {
+                visit[i][j] = -1;
+                cheese_count++;
+            }
+        }
+
+    // find outside air
+    visit[0][0] = 1;
+    Q.push({0, 0});
+
+    while (!Q.empty())
+    {
+        int r = Q.front().first;
+        int c = Q.front().second;
+        Q.pop();
+
+        for (int i = 0; i < 4; i++)
+        {
+            int nr = r + dr[i];
+            int nc = c + dc[i];
+
+            if (nr >= 0 && nr < N && nc >= 0 && nc < M)
+            {
+                if (MAP[nr][nc] == 0 && visit[nr][nc] == 0)
+                {
+                    visit[nr][nc] == 1;
+                    Q.push({nr, nc});
+                }
+            }
+        }
+    }
+
+    // find air connected with cheese
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < M; j++)
+            if (visit[i][j] == 1)
+                for (int k = 0; k < 4; k++)
+                {
+                    int nr = i + dr[k];
+                    int nc = j + dr[k];
+
+                    if (nr >= 0 && nr < N && nc >= 0 && nc < M)
+                        if (MAP[nr][nc] == 1)
+                        {
+                            Q.push({i, j});
+                            break;
+                        }
+                }
+    
+    while (true)
+    {
+        if (cheese_count == 0) break;
+        Melt_Cheese();
+        Merg_Air();
+        cnt++;
+    }
+    
+    std::cout << cnt << "\n";
+    
+    return 0;
+}
