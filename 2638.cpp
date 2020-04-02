@@ -9,6 +9,7 @@ int N, M;
 int MAP[MAX][MAX];
 int visit[MAX][MAX];
 int cheese_count = 0;
+int cnt = 0;
 std::queue<std::pair<int, int>> Q;
 
 void Melt_Cheese()
@@ -20,11 +21,34 @@ void Melt_Cheese()
         int r = NQ.front().first;
         int c = NQ.front().second;
         NQ.pop();
-    }
-    
 
+        for (int i = 0; i < 4; ++i)
+        {
+            int nr = r + dr[i];
+            int nc = c + dc[i];
+            if (nr >= 0 && nr < N && nc >= 0 && nc < M)
+            {
+                if (MAP[nr][nc] == 1)
+                {
+                    // first check
+                    if (visit[nr][nc] == -1)
+                    {
+                        visit[nr][nc] = 2;
+                    }
+                    // second check
+                    else if (visit[nr][nc] == 2)
+                    {
+                        cheese_count--;
+                        MAP[nr][nc] = 0;
+                        Q.push({nr,nc});
+                    }
+                }
+            }
+        }
+    }
 }
 
+// merge inner air(checked as 0) with outer air(checked as 1)
 void Merg_Air()
 {
     std::queue<std::pair<int, int>> NQ = Q;
@@ -51,9 +75,26 @@ void Merg_Air()
     }
 }
 
+// reset checked cheese to default
+void Reset_Cheese()
+{
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            if (MAP[i][j] == 1)
+            {
+                if (visit[i][j] == 2)
+                {
+                    visit[i][j] = -1;
+                }
+            }
+        }
+    }
+}
+
 int main()
 {
-    int cnt = 0;
 
     // input
     std::cin >> N >> M;
@@ -87,7 +128,7 @@ int main()
             {
                 if (MAP[nr][nc] == 0 && visit[nr][nc] == 0)
                 {
-                    visit[nr][nc] == 1;
+                    visit[nr][nc] = 1;
                     Q.push({nr, nc});
                 }
             }
@@ -116,6 +157,7 @@ int main()
         if (cheese_count == 0) break;
         Melt_Cheese();
         Merg_Air();
+        Reset_Cheese();
         cnt++;
     }
     
