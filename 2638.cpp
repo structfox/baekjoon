@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <vector>
 
 const int MAX = 100;
 const int dr[4] = {0, 0, 1, -1};
@@ -11,83 +12,69 @@ int visit[MAX][MAX];
 int cheese_count = 0;
 int cnt = 0;
 std::queue<std::pair<int, int>> Q;
+std::vector<std::pair<int,int>> Cheese; // Save Cheeses which connected with air more than twice
+std::vector<std::pair<std::pair<int,int>, bool>> V; // Cheese location, whether it's melted
+
+void Find_Cheese_List()
+{
+    /* 실질적으로 녹는 치즈들만 저장하는 과정. */
+    Cheese.clear(); // empty previous cheese location
+    for (int i = 0; i < V.size(); i++)
+    {
+        if (V[i].second == true) continue; // check cheese melted
+ 
+        int r = V[i].first.first;
+        int c = V[i].first.second;
+        int Cnt = 0;
+ 
+        for (int j = 0; j < 4; j++)
+        {
+            int nr = r + dr[j];
+            int nc = c + dc[j];
+            if (MAP[nr][nc] == 0 && visit[nr][nc] == 1) Cnt++; //connected with outside air count
+            // 단순히, MAP[nx][ny] == 0이 아닌, Visit의 값으로 외부공기인지 내부공기인지
+            // 체크도 해줘야 한다.
+        }
+ 
+        if (Cnt >= 2)
+        {
+            Cheese.push_back({r, c}); // add to melt candidate cheese
+            V[i].second = true;
+        }
+    }
+}
 
 void Melt_Cheese()
 {
-    std::queue<std::pair<int, int>> NQ = Q;
-    while (!Q.empty()) Q.pop();
-    while (!NQ.empty())
+    for (int i = 0; i < Cheese.size(); i++)
     {
-        int r = NQ.front().first;
-        int c = NQ.front().second;
-        NQ.pop();
-
-        for (int i = 0; i < 4; ++i)
-        {
-            int nr = r + dr[i];
-            int nc = c + dc[i];
-            if (nr >= 0 && nr < N && nc >= 0 && nc < M)
-            {
-                if (MAP[nr][nc] == 1)
-                {
-                    // first check
-                    if (visit[nr][nc] == -1)
-                    {
-                        visit[nr][nc] = 2;
-                    }
-                    // second check
-                    else if (visit[nr][nc] == 2)
-                    {
-                        cheese_count--;
-                        MAP[nr][nc] = 0;
-                        Q.push({nr,nc});
-                    }
-                }
-            }
-        }
+        int r = Cheese[i].first;
+        int c = Cheese[i].second;
+        MAP[r][c] = 0;
+        cheese_count--;
+        Q.push({r, c});
     }
+    
 }
 
 // merge inner air(checked as 0) with outer air(checked as 1)
 void Merg_Air()
 {
-    std::queue<std::pair<int, int>> NQ = Q;
-    while (!NQ.empty())
+    while (!Q.empty())
     {
-        int r = NQ.front().first;
-        int c = NQ.front().second;
-        NQ.pop();
+        int r = Q.front().first;
+        int c = Q.front().second;
+        Q.pop();
  
+        visit[r][c] = 1;
         for (int i = 0; i < 4; i++)
         {
             int nr = r + dr[i];
             int nc = c + dc[i];
-            if (nr >= 0 && nc >= 0 && nr < N && nc < M)
+            if (visit[nr][nc] == 0)
             {
-                if (visit[nr][nc] == 0)
-                {
-                    visit[nr][nc] = 1;
-                    Q.push({nr, nc});
-                    NQ.push({nr, nc});
-                }
-            }
-        }
-    }
-}
-
-// reset checked cheese to default
-void Reset_Cheese()
-{
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < M; j++)
-        {
-            if (MAP[i][j] == 1)
-            {
-                if (visit[i][j] == 2)
-                {
-                    visit[i][j] = -1;
-                }
+                visit[nr][nc] = 1;
+                Q.push({nr, nc});
             }
         }
     }
@@ -95,7 +82,6 @@ void Reset_Cheese()
 
 int main()
 {
-
     // input
     std::cin >> N >> M;
     for (int i = 0; i < N; ++i)
@@ -105,6 +91,7 @@ int main()
             if (MAP[i][j] == 1)
             {
                 visit[i][j] = -1;
+                V.push_back({{i, j}, false});
                 cheese_count++;
             }
         }
@@ -135,29 +122,12 @@ int main()
         }
     }
 
-    // find air connected with cheese
-    for (int i = 0; i < N; i++)
-        for (int j = 0; j < M; j++)
-            if (visit[i][j] == 1)
-                for (int k = 0; k < 4; k++)
-                {
-                    int nr = i + dr[k];
-                    int nc = j + dr[k];
-
-                    if (nr >= 0 && nr < N && nc >= 0 && nc < M)
-                        if (MAP[nr][nc] == 1)
-                        {
-                            Q.push({i, j});
-                            break;
-                        }
-                }
-    
     while (true)
     {
         if (cheese_count == 0) break;
+        Find_Cheese_List();
         Melt_Cheese();
         Merg_Air();
-        Reset_Cheese();
         cnt++;
     }
     
