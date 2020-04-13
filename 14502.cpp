@@ -39,9 +39,33 @@ void Spread_Virus()
         {
             int nr = r + dr[i];
             int nc = c + dc[i];
+
+            if (nr >=0 && nr < N && nc >= 0 && nc < M)
+            {
+                if (c_MAP[nr][nc] == 0)
+                {
+                    c_MAP[nr][nc] = 2;
+                    v.push(make_pair(nr, nc));
+                }
+            }
         }
-        
     }
+}
+
+void Count_Safe()
+{
+    int cnt = 0;
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            if (c_MAP[i][j] == 0)
+            {
+                cnt++;
+            }
+        }
+    }
+    answer = (cnt > answer) ? cnt : answer;
 }
 
 int main()
@@ -75,10 +99,14 @@ int main()
                 c_MAP[safe[j].first][safe[j].second] = 1;
                 c_MAP[safe[k].first][safe[k].second] = 1;
 
+                Spread_Virus();
+
+                Count_Safe();
             }
         }
     }
     
+    cout << answer << "\n";
     
     return 0;
 }
