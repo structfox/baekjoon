@@ -16,7 +16,9 @@ ll init(int node, int start, int end) {
     if (start == end) {
         return seg_tree[node] = num[start];
     } else {
-        return seg_tree[node] = min(init(node*2, start, (start+end)/2), init(node*2+1, (start+end)/2+1, end));
+        ll tmp1 = init(node*2, start, (start+end)/2);
+        ll tmp2 = init(node*2+1, (start+end)/2+1, end);
+        return seg_tree[node] = min(tmp1, tmp2);
     }
 }
 
@@ -26,7 +28,9 @@ ll query(int node, int start, int end, int left, int right)
     
     if (left <= start && end <= right) return seg_tree[node];
     
-    return min(query(node * 2, start, (start + end) / 2, left, right), query(node * 2 + 1, (start + end) / 2 + 1, end, left, right));
+    ll tmp1 = query(node * 2, start, (start + end) / 2, left, right);
+    ll tmp2 = query(node * 2 + 1, (start + end) / 2 + 1, end, left, right);
+    return min(tmp1, tmp2);
 }
 
 int main()
