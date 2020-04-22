@@ -125,36 +125,32 @@ void Roll(int m_MAP[MAX][MAX], int cctv_cnt)
 
     for (int i = 0; i < 4; i++)
     {
+        Copy_Map(m_MAP);
         switch (C_MAP[cctv[cctv_cnt].first][cctv[cctv_cnt].second])
         {
         case 1:
             CC1(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
             Roll(C_MAP, cctv_cnt + 1);
-            Copy_Map(m_MAP);
             break;
 
         case 2:
             CC2(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
             Roll(C_MAP, cctv_cnt + 1);
-            Copy_Map(m_MAP);
             break;
 
         case 3:
             CC3(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
             Roll(C_MAP, cctv_cnt + 1);
-            Copy_Map(m_MAP);
             break;
 
         case 4:
             CC4(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
             Roll(C_MAP, cctv_cnt + 1);
-            Copy_Map(m_MAP);
             break;
         
         case 5:
             CC5(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
             Roll(C_MAP, cctv_cnt + 1);
-            Copy_Map(m_MAP);
             break;
         }
     }
@@ -176,7 +172,6 @@ int main()
         }
     }
 
-    Copy_Map(MAP);
     Roll(MAP, 0);
 
     cout << answer << "\n";
