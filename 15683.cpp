@@ -1,6 +1,3 @@
-/*
-    0 north, 1 east, 2 south, 3 west
-*/
 #include <iostream>
 #include <vector>
 
@@ -11,16 +8,14 @@ const int MAX = 8;
 int N, M;
 int answer = 0x3f3f3f3f;
 int MAP[MAX][MAX];
-int C_MAP[MAX][MAX];
 vector<pair<int, int> > cctv;
 
-void Copy_Map(int m_MAP[MAX][MAX])
-{
-    for (int i = 0; i < N; i++)
+void mcopy(int (*a)[MAX], int (*b)[MAX]){
+	for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < M; j++)
         {
-            C_MAP[i][j] = m_MAP[i][j];
+            a[i][j] = b[i][j];
         }
     }
 }
@@ -33,9 +28,9 @@ void CC1(int dir, int r, int c)
         --r;
         while (r >= 0)
         {
-            if (C_MAP[r][c] == 6) break;
+            if (MAP[r][c] == 6) break;
             
-            if (C_MAP[r][c] == 0) C_MAP[r][c] = -1;
+            if (MAP[r][c] == 0) MAP[r][c] = -1;
             --r;
         }
         break;
@@ -44,9 +39,9 @@ void CC1(int dir, int r, int c)
         ++c;
         while (c < M)
         {
-            if (C_MAP[r][c] == 6) break;
+            if (MAP[r][c] == 6) break;
             
-            if (C_MAP[r][c] == 0) C_MAP[r][c] = -1;
+            if (MAP[r][c] == 0) MAP[r][c] = -1;
             ++c;
         }
         break;
@@ -55,9 +50,9 @@ void CC1(int dir, int r, int c)
         ++r;
         while (r < N)
         {
-            if (C_MAP[r][c] == 6) break;
+            if (MAP[r][c] == 6) break;
             
-            if (C_MAP[r][c] == 0) C_MAP[r][c] = -1;
+            if (MAP[r][c] == 0) MAP[r][c] = -1;
             ++r;
         }
         break;
@@ -65,9 +60,9 @@ void CC1(int dir, int r, int c)
         --c;
         while (c >= 0)
         {
-            if (C_MAP[r][c] == 6) break;
+            if (MAP[r][c] == 6) break;
             
-            if (C_MAP[r][c] == 0) C_MAP[r][c] = -1;
+            if (MAP[r][c] == 0) MAP[r][c] = -1;
             --c;
         }
         break;
@@ -83,13 +78,13 @@ void CC2(int dir, int r, int c)
 void CC3(int dir, int r, int c)
 {
     CC1(dir, r, c);
-    CC1((dir + 3) % 4, r, c);
+    CC1((dir + 1) % 4, r, c);
 }
 
 void CC4(int dir, int r, int c)
 {
     CC1(dir, r, c);
-    CC1((dir + 2) % 4, r, c);
+    CC1((dir + 1) % 4, r, c);
     CC1((dir + 3) % 4, r, c);
 }
 
@@ -108,13 +103,13 @@ int Count()
     {
         for (int j = 0; j < M; j++)
         {
-            if (C_MAP[i][j] == 0) ++cnt;
+            if (MAP[i][j] == 0) ++cnt;
         }
     }
     return cnt;
 }
 
-void Roll(int m_MAP[MAX][MAX], int cctv_cnt)
+void Roll(int cctv_cnt)
 {
     if (cctv_cnt >= cctv.size())
     {
@@ -122,35 +117,37 @@ void Roll(int m_MAP[MAX][MAX], int cctv_cnt)
         answer = (answer < cnt) ? answer : cnt;
         return;
     }
-
+	
+	int save[MAX][MAX];
+	mcopy(save, MAP);
     for (int i = 0; i < 4; i++)
     {
-        Copy_Map(m_MAP);
-        switch (C_MAP[cctv[cctv_cnt].first][cctv[cctv_cnt].second])
+	mcopy(MAP, save);
+        switch (MAP[cctv[cctv_cnt].first][cctv[cctv_cnt].second])
         {
         case 1:
             CC1(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
-            Roll(C_MAP, cctv_cnt + 1);
+            Roll(cctv_cnt + 1);
             break;
 
         case 2:
             CC2(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
-            Roll(C_MAP, cctv_cnt + 1);
+            Roll(cctv_cnt + 1);
             break;
 
         case 3:
             CC3(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
-            Roll(C_MAP, cctv_cnt + 1);
+            Roll(cctv_cnt + 1);
             break;
 
         case 4:
             CC4(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
-            Roll(C_MAP, cctv_cnt + 1);
+            Roll(cctv_cnt + 1);
             break;
         
         case 5:
             CC5(i, cctv[cctv_cnt].first, cctv[cctv_cnt].second);
-            Roll(C_MAP, cctv_cnt + 1);
+            Roll(cctv_cnt + 1);
             break;
         }
     }
@@ -172,8 +169,7 @@ int main()
         }
     }
 
-    Roll(MAP, 0);
-
+    Roll(0);
     cout << answer << "\n";
     
     return 0;
