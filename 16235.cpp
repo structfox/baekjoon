@@ -10,55 +10,47 @@ using namespace std;
 int N, M, K;
 int MAP[10][10];
 int A[10][10];
+vector<int> trees[10][10];
 
-void spring(vector<vector<vector<pair<int, int>>>>& trees)
+void Spring_Summer()
 {
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
+            if (trees[i][j].size() == 0) continue;
+
+            int dead_ingredient = 0;
+            vector<int> tmp;
+            sort(trees[i][j].begin(), trees[i][j].end());
+
             // eat ingredient
             for (int k = 0; k < trees[i][j].size(); k++)
             {
-                // if tree is dead
-                if (trees[i][j][k].first == 0) continue;
-                
                 // have enough ingredient
-                if (MAP[i][j] >= trees[i][j][k].second)
+                if (MAP[i][j] >= trees[i][j][k])
                 {
-                    MAP[i][j] -= trees[i][j][k].second;
-                    trees[i][j][k].second++;
+                    MAP[i][j] -= trees[i][j][k];
+                    tmp.push_back(trees[i][j][k] + 1);
                 }
                 else
                 {
-                    trees[i][j][k].first = 0;
+                    dead_ingredient += static_cast<int>(trees[i][j][k] / 2);
                 }
             }
-        }
-    }
-}
 
-void summer(vector<vector<vector<pair<int, int>>>>& trees)
-{
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            for (vector<pair<int, int>>::iterator k = trees[i][j].begin(); k != trees[i][j].end(); k++)
+            trees[i][j].clear();
+            for (int k = 0; k < tmp.size(); k++)
             {
-                // if tree is alive
-                if ((*k).first == 1) continue;
-
-                MAP[i][j] += static_cast<int>((*k).second / 2);
-                trees[i][j].erase(k);
-
-                --k;
+                trees[i][j].push_back(tmp[k]);
             }
+
+            MAP[i][j] += dead_ingredient;
         }
     }
 }
 
-void autumn(vector<vector<vector<pair<int, int>>>>& trees)
+void Autumn_Winter()
 {
     for (int i = 0; i < N; i++)
     {
@@ -66,47 +58,35 @@ void autumn(vector<vector<vector<pair<int, int>>>>& trees)
         {
             for (int k = 0; k < trees[i][j].size(); k++)
             {
-                // tree's age is multiples of 5
-                if (trees[i][j][k].second % 5 == 0)
+                if (trees[i][j][k] % 5 == 0) //autumn
                 {
                     if (i - 1 >= 0)
                     {
-                        if (j - 1 >= 0) trees[i - 1][j - 1].insert(trees[i - 1][j - 1].begin(), make_pair(1, 1));
+                        if (j - 1 >= 0) trees[i - 1][j - 1].push_back(1); //.insert(trees[i - 1][j - 1].begin(), make_pair(1, 1));
 
-                        if (j + 1 < N) trees[i - 1][j + 1].insert(trees[i - 1][j + 1].begin(), make_pair(1, 1));
+                        if (j + 1 < N) trees[i - 1][j + 1].push_back(1); //.insert(trees[i - 1][j + 1].begin(), make_pair(1, 1));
 
-                        trees[i - 1][j].insert(trees[i - 1][j].begin(), make_pair(1, 1));
+                        trees[i - 1][j].push_back(1); // .insert(trees[i - 1][j].begin(), make_pair(1, 1));
                     }
 
                     if (i + 1 < N)
                     {
-                        if (j - 1 >= 0) trees[i + 1][j - 1].insert(trees[i + 1][j - 1].begin(), make_pair(1, 1));
-                         
-                        if (j + 1 < N) trees[i + 1][j + 1].insert(trees[i + 1][j + 1].begin(), make_pair(1, 1));
+                        if (j - 1 >= 0) trees[i + 1][j - 1].push_back(1); // .insert(trees[i + 1][j - 1].begin(), make_pair(1, 1));
+                        
+                        if (j + 1 < N) trees[i + 1][j + 1].push_back(1); // .insert(trees[i + 1][j + 1].begin(), make_pair(1, 1));
 
-                        trees[i + 1][j].insert(trees[i + 1][j].begin(), make_pair(1, 1));
+                        trees[i + 1][j].push_back(1); // .insert(trees[i + 1][j].begin(), make_pair(1, 1));
                     }
 
-                    if (j - 1 >= 0) trees[i][j - 1].insert(trees[i][j - 1].begin(), make_pair(1, 1));
+                    if (j - 1 >= 0) trees[i][j - 1].push_back(1); //.insert(trees[i][j - 1].begin(), make_pair(1, 1));
 
-                    if (j + 1 < N) trees[i][j + 1].insert(trees[i][j + 1].begin(), make_pair(1, 1));
+                    if (j + 1 < N) trees[i][j + 1].push_back(1); // .insert(trees[i][j + 1].begin(), make_pair(1, 1));
                 }
             }
+            MAP[i][j] += A[i][j]; // winter
         }
     }
 }
-
-void winter(vector<vector<vector<pair<int, int>>>>& trees)
-{
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            MAP[i][j] += A[i][j];
-        }
-    }
-}
-
 
 int main()
 {
@@ -116,27 +96,23 @@ int main()
     {
         for (int j = 0; j < N; j++)
         {
-            int tmp;
-            cin >> tmp;
-            A[i][j] = tmp;
+            cin >> A[i][j];
             MAP[i][j] = 5;
         }
     }
+
     // N * N array with vector<pair<death, age>> initial 
-    vector<vector<vector<pair<int, int>>>> trees(N, vector<vector<pair<int, int>>>(N, vector<pair<int, int>>(0)));
     for (int i = 0; i < M; i++)
     {
         int r, c, a;
         cin >> r >> c >> a;
-        trees[r - 1][c - 1].push_back(make_pair(1, a));
+        trees[r - 1][c - 1].push_back(a);
     }
     
     for (int i = 0; i < K; i++)
     {
-        spring(trees);
-        summer(trees);
-        autumn(trees);
-        winter(trees);
+        Spring_Summer();
+        Autumn_Winter();
     }
 
     int answer = 0;
