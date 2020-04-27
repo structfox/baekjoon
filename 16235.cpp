@@ -27,6 +27,7 @@ void spring(vector<vector<vector<pair<int, int>>>>& trees)
                 if (MAP[i][j] >= trees[i][j][k].second)
                 {
                     MAP[i][j] -= trees[i][j][k].second;
+                    trees[i][j][k].second++;
                 }
                 else
                 {
@@ -70,25 +71,25 @@ void autumn(vector<vector<vector<pair<int, int>>>>& trees)
                 {
                     if (i - 1 >= 0)
                     {
-                        if (j - 1 >= 0) trees[i - 1][j - 1].insert(trees[i - 1][j - 1].begin(), make_pair(1, 0));
+                        if (j - 1 >= 0) trees[i - 1][j - 1].insert(trees[i - 1][j - 1].begin(), make_pair(1, 1));
 
-                        if (j + 1 < N) trees[i - 1][j + 1].insert(trees[i - 1][j + 1].begin(), make_pair(1, 0));
+                        if (j + 1 < N) trees[i - 1][j + 1].insert(trees[i - 1][j + 1].begin(), make_pair(1, 1));
 
-                        trees[i - 1][j].insert(trees[i - 1][j].begin(), make_pair(1, 0));
+                        trees[i - 1][j].insert(trees[i - 1][j].begin(), make_pair(1, 1));
                     }
 
                     if (i + 1 < N)
                     {
-                        if (j - 1 >= 0) trees[i + 1][j - 1].insert(trees[i + 1][j - 1].begin(), make_pair(1, 0));
+                        if (j - 1 >= 0) trees[i + 1][j - 1].insert(trees[i + 1][j - 1].begin(), make_pair(1, 1));
                          
-                        if (j + 1 < N) trees[i + 1][j + 1].insert(trees[i + 1][j + 1].begin(), make_pair(1, 0));
+                        if (j + 1 < N) trees[i + 1][j + 1].insert(trees[i + 1][j + 1].begin(), make_pair(1, 1));
 
-                        trees[i + 1][j].insert(trees[i + 1][j].begin(), make_pair(1, 0));
+                        trees[i + 1][j].insert(trees[i + 1][j].begin(), make_pair(1, 1));
                     }
 
-                    if (j - 1 >= 0) trees[i][j - 1].insert(trees[i][j - 1].begin(), make_pair(1, 0));
+                    if (j - 1 >= 0) trees[i][j - 1].insert(trees[i][j - 1].begin(), make_pair(1, 1));
 
-                    if (j + 1 < N) trees[i][j + 1].insert(trees[i][j + 1].begin(), make_pair(1, 0));
+                    if (j + 1 < N) trees[i][j + 1].insert(trees[i][j + 1].begin(), make_pair(1, 1));
                 }
             }
         }
@@ -101,11 +102,6 @@ void winter(vector<vector<vector<pair<int, int>>>>& trees)
     {
         for (int j = 0; j < N; j++)
         {
-            for (int k = 0; k < trees[i][j].size(); k++)
-            {
-                ++trees[i][j][k].second;
-            }
-            
             MAP[i][j] += A[i][j];
         }
     }
