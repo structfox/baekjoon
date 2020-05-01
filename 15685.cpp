@@ -14,7 +14,7 @@ vector<int> dragon;
 void Curve()
 {
     int s = dragon.size();
-    for (int i = s - 1; i >= 0; i++)
+    for (int i = s - 1; i >= 0; i--)
     {
         int nd = (dragon[i] + 1) % 4;
         x += dx[nd];
@@ -57,7 +57,6 @@ int main()
         {
             Curve();
         }
-        
     }
     
     Count();
