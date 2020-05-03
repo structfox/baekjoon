@@ -12,6 +12,7 @@ int R, C, N;
 char MAP[100][100];
 bool visited[100][100];
 bool cluster[100][100];
+vector<int> order;
 vector<pair<int, int> > mineral_float;
 
 // find connected minerals
@@ -51,7 +52,7 @@ void Find_Float()
 int Fall_Count(int r, int c)
 {
     int cnt = 0;
-    for (int i = r; i < R; ++i)
+    for (int i = r + 1; i < R; ++i)
     {
         if (MAP[i][c] == 'x')
         {
@@ -105,12 +106,18 @@ int main()
     cin >> N;
     for (int i = 0; i < N; i++)
     {
+        int a;
+        cin >> a;
+        order.push_back(a);
+    }
+    
+    for (int i = 0; i < order.size(); i++)
+    {
         memset(visited, 0, sizeof(visited));
         memset(cluster, 0, sizeof(cluster));
         mineral_float.clear();
 
-        int height;
-        cin >> height;
+        int height = order[i];
 
         // throw stick and remove mineral
         if (i % 2 == 0)
@@ -135,7 +142,7 @@ int main()
                 }
             }
         }
-cout << "a";
+
         // find float cluster
         for (int j = 0; j < C; j++)
         {
@@ -145,12 +152,8 @@ cout << "a";
                 Find_Ground(R - 1, j);
             }
         }
-        
-        cout << "b";
         Find_Float();
-cout << "c";
         ReMAP();
-        cout << "d\n";
     }
 
     for (int i = 0; i < R; i++)
