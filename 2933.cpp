@@ -69,7 +69,7 @@ int Fall_Count(int r, int c)
 void ReMAP()
 {
     int height = INF;
-    for (int i = 0; mineral_float.size(); ++i)
+    for (int i = 0; i < mineral_float.size(); ++i)
     {
         int r = mineral_float[i].first;
         int c = mineral_float[i].second;
